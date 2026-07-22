@@ -1,0 +1,38 @@
+# Store adapters for the Galaxy Z Flip 7 (256GB) price tracker.
+#
+# Add a store by appending an entry. `defaults` are inherited by every store
+# unless overridden. See README.md for the field reference and how to tune a
+# selector when a store comes back "unavailable" on the first live run.
+
+defaults:
+  timeout: 25
+  method: jsonld            # most stores emit schema.org Product/Offer JSON-LD
+  currency: EUR             # Bulgaria adopted the euro in Jan 2026
+  fetch: auto               # HTTP first, headless-browser fallback if blocked/empty
+  user_agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  accept_language: "bg-BG,bg;q=0.9,en;q=0.8"
+
+stores:
+  # --- pazaruvaj.com: Bulgarian price aggregator (points to third-party sellers)
+  - id: pazaruvaj
+    name: "pazaruvaj.com"
+    enabled: true
+    url: "https://www.pazaruvaj.com/p/samsung-galaxy-z-flip7-5g-256gb-12gb-ram-dual-pP1217153056/"
+    method: jsonld          # aggregator pages expose AggregateOffer.lowPrice
+    currency: EUR
+    is_aggregator: true
+    # Fallback if JSON-LD ever disappears — flip method to `css` and use this:
+    # method: css
+    # selector: ".b-price, .price, [itemprop=lowPrice]"
+    # price_regex: "([0-9][0-9\\s.,]*)"
+    search_query: "Samsung Galaxy Z Flip7 256GB pazaruvaj"
+
+  # --- eMAG.bg: the biggest Bulgarian e-commerce site (Jetblack tracked as the
+  #     representative 256GB colour; colours are normally identically priced).
+  - id: emag_bg
+    name: "eMAG.bg"
+    enabled: true
+    url: "https://www.emag.bg/smartfon-samsung-galaxy-z-flip7-12gb-ram-256gb-5g-jetblack-sm-f766bzkgeue/pd/DJ5WT93BM/"
+    method: jsonld          # eMAG product pages emit a schema.org Product with Offer.price
+    currency: EUR
+    search_query: "Samsung Galaxy Z Flip7 256GB eMAG"
