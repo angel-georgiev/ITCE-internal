@@ -33,7 +33,11 @@ First cut tracks two stores — **pazaruvaj.com** (a BG price aggregator) and
 
 For each store (`fetch: auto`):
 
-1. **HTTP** (`requests`) — fast path.
+1. **HTTP** (`requests`) — fast path. Requests are sent with browser-like
+   headers, advertising only the response encodings the environment can
+   actually decode (`gzip`/`deflate`, plus `br` when the optional `brotli`
+   package is installed) so a store's compressed page is never left as
+   undecodable bytes.
 2. **Headless browser** (Playwright/Chromium) — if HTTP is blocked (Cloudflare,
    etc.) or the price isn't in the static HTML, the page is rendered in a real
    browser and scraped from the DOM.
@@ -118,6 +122,13 @@ environment whose network policy **allows** access to those retail domains
 (e.g. `emag.bg`, `pazaruvaj.com`). In a locked-down sandbox that blocks them,
 every store will report `unavailable` — run it where egress to the stores is
 open, or adjust the environment's network policy.
+
+Even where egress is open, an individual store can still refuse a scrape:
+some sites (typically Cloudflare-fronted aggregators such as `pazaruvaj.com`)
+return an HTTP 403 anti-bot challenge and are reported `blocked` **with the
+reason**, while direct retailers such as `emag.bg` serve their product JSON-LD
+and return a live price. That is expected — the run continues and reports
+whatever stores it could reach.
 
 ## Roadmap
 

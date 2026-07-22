@@ -7,12 +7,33 @@ network.
 
 from __future__ import annotations
 
+import importlib.util
 import time
 from dataclasses import dataclass
 
 import requests
 
 from .models import StoreConfig
+
+
+def _supported_accept_encoding() -> str:
+    """Advertise only the content-encodings we can actually decode.
+
+    requests decodes gzip/deflate out of the box, but brotli ("br") and zstd
+    need optional packages. Advertising "br" without a decoder makes servers
+    (e.g. Cloudflare-fronted eMAG) return brotli bytes that requests can't
+    inflate, leaving resp.text as undecodable garbage — the fetch "succeeds"
+    but no price is ever found. Only offer what's installed.
+    """
+    encodings = ["gzip", "deflate"]
+    if importlib.util.find_spec("brotli") or importlib.util.find_spec("brotlicffi"):
+        encodings.append("br")
+    if importlib.util.find_spec("zstandard"):
+        encodings.append("zstd")
+    return ", ".join(encodings)
+
+
+_ACCEPT_ENCODING = _supported_accept_encoding()
 
 # Markers that indicate a bot-protection interstitial rather than real content.
 _CHALLENGE_MARKERS = (
@@ -45,7 +66,7 @@ def build_headers(cfg: StoreConfig) -> dict[str, str]:
             "image/avif,image/webp,*/*;q=0.8"
         ),
         "Accept-Language": cfg.accept_language,
-        "Accept-Encoding": "gzip, deflate, br",
+        "Accept-Encoding": _ACCEPT_ENCODING,
         "Connection": "keep-alive",
         "Upgrade-Insecure-Requests": "1",
     }
