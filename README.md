@@ -40,7 +40,13 @@ For each store (`fetch: auto`):
    undecodable bytes.
 2. **Headless browser** (Playwright/Chromium) — if HTTP is blocked (Cloudflare,
    etc.) or the price isn't in the static HTML, the page is rendered in a real
-   browser and scraped from the DOM.
+   browser and scraped from the DOM. In a proxied environment the browser tier
+   auto-detects the outbound proxy (`HTTPS_PROXY`/`HTTP_PROXY`) and routes
+   Chromium through it — Chromium, unlike `requests`, does not read those env
+   vars on its own — and it launches the full Chromium binary
+   (`PLAYWRIGHT_CHROMIUM_PATH`, default `/opt/pw-browsers/chromium`) rather than
+   Playwright's `headless_shell`, which can return empty responses behind a
+   TLS-re-terminating proxy.
 3. **Web search** (`--fallback`, optional) — last-resort discovery/verification.
 
 A store that fails all tiers is marked `unavailable`/`blocked` **with a reason**
