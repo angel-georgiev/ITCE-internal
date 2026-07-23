@@ -29,12 +29,16 @@ stores:
     currency: EUR
     search_query: "Samsung Galaxy Z Flip7 256GB techwave.bg цена"
 
-  # --- TImobile: online phone retailer (Mint, 256GB).
+  # --- TImobile: online phone retailer (Jetblack, 256GB).
+  #     Its JSON-LD mislabels the currency — the price value is EUR but tagged
+  #     "BGN" — so force_currency treats the raw amount as EUR (matches the
+  #     visible on-page price, e.g. 1199.00 € shown as 1199 "BGN" in markup).
   - id: timobile
     name: "TImobile"
     enabled: true
-    url: "https://www.timobile.bg/p/samsung-galaxy-z-flip7-5g-12gb-ram-256gb-mint/"
+    url: "https://www.timobile.bg/p/samsung-galaxy-z-flip7-5g-12gb-ram-256gb-jetblack/"
     currency: EUR
+    force_currency: true
     search_query: "Samsung Galaxy Z Flip7 256GB timobile.bg цена"
 
   # --- Ofisite (ofisitebg.com): IT & electronics online store.

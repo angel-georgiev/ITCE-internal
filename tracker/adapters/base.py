@@ -33,6 +33,19 @@ def _fail(reason: str) -> ExtractResult:
 
 
 def _from_raw(raw: str | None, cfg: StoreConfig, color: str | None = None) -> ExtractResult:
+    if cfg.force_currency:
+        # Ignore any currency marker in the text; treat the amount as cfg.currency.
+        amount = currency_mod.parse_price(raw)
+        if amount is None:
+            return _fail("price not parseable")
+        cur = cfg.currency.upper()
+        try:
+            price_eur = currency_mod.to_eur(amount, cur)
+        except ValueError:
+            return _fail(f"unsupported currency {cur!r}")
+        return ExtractResult(
+            price_eur=price_eur, raw_price=(raw.strip() if raw else None), currency=cur, color=color
+        )
     price_eur, raw_price, cur = currency_mod.normalize(raw, currency_hint=cfg.currency)
     if price_eur is None:
         return _fail("price not parseable")
@@ -108,7 +121,9 @@ def _extract_jsonld(soup: BeautifulSoup, cfg: StoreConfig) -> ExtractResult:
             amount = currency_mod.parse_price(raw)
             if amount is None:
                 continue
-            cur = (cur or cfg.currency).upper()
+            # A store's declared currency wins by default, but force_currency
+            # overrides it for markup that mislabels the currency.
+            cur = cfg.currency.upper() if cfg.force_currency else (cur or cfg.currency).upper()
             try:
                 eur = currency_mod.to_eur(amount, cur)
             except ValueError:

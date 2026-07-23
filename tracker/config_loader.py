@@ -58,6 +58,7 @@ def load_stores(config_path: str | Path) -> list[StoreConfig]:
                 selector=merged.get("selector"),
                 price_regex=merged.get("price_regex"),
                 currency=merged.get("currency", "BGN"),
+                force_currency=merged.get("force_currency", False),
                 fetch=fetch,
                 enabled=merged.get("enabled", True),
                 is_aggregator=merged.get("is_aggregator", False),

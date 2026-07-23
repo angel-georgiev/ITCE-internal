@@ -36,6 +36,10 @@ class StoreConfig:
     selector: str | None = None
     price_regex: str | None = None
     currency: str = "BGN"
+    # Ignore any currency the page/JSON-LD declares and treat the raw amount as
+    # `currency`. For stores whose markup mislabels the currency (e.g. TImobile
+    # tags EUR prices as BGN), which would otherwise be converted incorrectly.
+    force_currency: bool = False
     fetch: str = "auto"  # auto | http | browser
     enabled: bool = True
     is_aggregator: bool = False

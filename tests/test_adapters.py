@@ -54,6 +54,24 @@ def test_jsonld_tolerates_control_characters(html_fixture):
     assert ex.currency == "EUR"
 
 
+def test_force_currency_overrides_mislabeled_jsonld():
+    # TImobile-style bug: the price value is EUR but the markup tags it "BGN".
+    # force_currency must treat the amount as the configured currency (EUR),
+    # not convert it as BGN.
+    html = (
+        '<html><head><script type="application/ld+json">'
+        '{"@type":"Product","name":"Z Flip7","offers":'
+        '{"@type":"Offer","price":"1199","priceCurrency":"BGN"}}'
+        "</script></head><body></body></html>"
+    )
+    cfg = StoreConfig(id="ti", name="TImobile", url="x", method="jsonld", currency="EUR")
+    assert extract_price(html, cfg).price_eur == Decimal("613.04")  # buggy: 1199/1.95583
+    cfg_forced = StoreConfig(
+        id="ti", name="TImobile", url="x", method="jsonld", currency="EUR", force_currency=True
+    )
+    assert extract_price(html, cfg_forced).price_eur == Decimal("1199")  # correct
+
+
 def test_block_detection(html_fixture):
     assert looks_blocked(200, html_fixture("cloudflare_challenge.html")) is True
     assert looks_blocked(403, "") is True
