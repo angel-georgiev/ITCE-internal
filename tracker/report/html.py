@@ -25,6 +25,8 @@ tr.cheapest{background:#eafaf0;}
 .status{color:#b7791f;font-weight:600;}
 .agg{color:#888;}
 .note{color:#999;font-size:12px;}
+td.link{max-width:320px;}
+td.link a{color:#1a73e8;word-break:break-all;font-size:12px;}
 @media(prefers-color-scheme:dark){
   body{background:#111;color:#eee;}
   .summary{background:#1b1e24;border-color:#333;}
@@ -56,10 +58,14 @@ def render(snapshot: Snapshot, diff: DiffReport) -> str:
         else:
             note = f" <span class='note'>{escape(r.reason)}</span>" if r.reason else ""
             status_html = f"<span class='status'>{escape(r.status)}</span>{note}"
+        link_html = (
+            f"<a href='{escape(r.url)}'>{escape(r.url)}</a>" if r.url else ""
+        )
         body_rows.append(
             f"<tr class='{cls}'><td class='num'>{r.rank or ''}</td><td>{store}</td>"
             f"<td class='num'>{escape(format_eur(r.price_eur))}</td><td>{delta_html}</td>"
-            f"<td>{escape(r.tier or r.source or '')}</td><td>{status_html}</td></tr>"
+            f"<td>{escape(r.tier or r.source or '')}</td><td>{status_html}</td>"
+            f"<td class='link'>{link_html}</td></tr>"
         )
 
     return f"""<!doctype html>
@@ -74,7 +80,7 @@ def render(snapshot: Snapshot, diff: DiffReport) -> str:
 <div class="summary"><ul>{summary}</ul></div>
 <table>
 <thead><tr><th class="num">#</th><th>Store</th><th class="num">Price (EUR)</th>
-<th>Δ vs previous</th><th>Source</th><th>Status</th></tr></thead>
+<th>Δ vs previous</th><th>Source</th><th>Status</th><th>Link</th></tr></thead>
 <tbody>{''.join(body_rows)}</tbody>
 </table>
 <p class="note">* = price aggregator (links to third-party sellers)</p>

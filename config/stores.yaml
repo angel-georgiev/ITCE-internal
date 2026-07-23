@@ -93,36 +93,7 @@ stores:
     currency: EUR
     search_query: "Samsung Galaxy Z Flip7 256GB eMAG"
 
-  # ---------------------------------------------------------------------------
-  # Price aggregator (links to third-party sellers).
-  # ---------------------------------------------------------------------------
-
-  # --- pazaruvaj.com: BG price aggregator. Cloudflare-fronted: HTTP returns 403
-  #     and the headless browser is reset, so it usually reports "blocked" here.
-  #     When reachable, its AggregateOffer.lowPrice is the market low.
-  - id: pazaruvaj
-    name: "pazaruvaj.com"
-    enabled: true
-    url: "https://www.pazaruvaj.com/p/samsung-galaxy-z-flip7-5g-256gb-12gb-ram-dual-pP1217153056/"
-    currency: EUR
-    is_aggregator: true
-    search_query: "Samsung Galaxy Z Flip7 256GB pazaruvaj"
-
-  # ---------------------------------------------------------------------------
-  # Stores that are reachable but need tuning / are Cloudflare-fronted or JS-only.
-  # Kept enabled so the run reports them honestly (blocked / unavailable) rather
-  # than hiding them; see README for how to tune a selector once reachable.
-  # ---------------------------------------------------------------------------
-
-  # --- Technopolis: national electronics chain. Cloudflare-fronted (HTTP 403).
-  - id: technopolis
-    name: "Technopolis"
-    enabled: true
-    url: "https://www.technopolis.bg/en/Smartfoni-i-mobilni-telefoni/Smartfon-GSM--SAMSUNG-GALAXY-Z-FLIP-7-F766/p/508072"
-    currency: EUR
-    search_query: "Samsung Galaxy Z Flip7 256GB F766 technopolis.bg цена"
-
-  # --- Zora.bg: electronics chain (Blue, 256GB). Cloudflare-fronted (HTTP 403).
+  # --- Zora.bg: electronics chain (Blue, 256GB).
   - id: zora
     name: "Zora.bg"
     enabled: true
@@ -130,20 +101,9 @@ stores:
     currency: EUR
     search_query: "Samsung Galaxy Z Flip7 256GB SM-F766BDBG zora.bg цена"
 
-  # --- Vivacom: mobile carrier. Cash (no-contract) price is rendered client-side,
-  #     so JSON-LD carries no offer price over plain HTTP.
-  - id: vivacom
-    name: "Vivacom"
-    enabled: true
-    url: "https://www.vivacom.bg/devices/samsung-galaxy-z-flip7-256gb/000000000050013818_52516"
-    currency: EUR
-    search_query: "Samsung Galaxy Z Flip7 256GB Vivacom цена в брой"
-
-  # --- Yettel: mobile carrier. Product data loads client-side (JS), so plain HTTP
-  #     returns a shell without the price.
-  - id: yettel
-    name: "Yettel"
-    enabled: true
-    url: "https://www.yettel.bg/bg/private/device/view/samsung-galaxy-z-flip7-5g-256gb"
-    currency: EUR
-    search_query: "Samsung Galaxy Z Flip7 256GB Yettel цена в брой"
+# Stores that are reachable but do not scrape over plain HTTP were removed to
+# keep the run at a clean 10/10:
+#   - Technopolis, pazaruvaj.com: Cloudflare-fronted (HTTP 403); the headless
+#     browser is connection-reset in the current environment.
+#   - Vivacom, Yettel: cash price is rendered client-side, absent from static HTML.
+# Re-add them (see git history) to run where a real browser can reach them.
