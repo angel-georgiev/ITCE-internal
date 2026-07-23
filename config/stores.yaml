@@ -29,6 +29,38 @@ stores:
     currency: EUR
     search_query: "Samsung Galaxy Z Flip7 256GB techwave.bg цена"
 
+  # --- TImobile: online phone retailer (Mint, 256GB).
+  - id: timobile
+    name: "TImobile"
+    enabled: true
+    url: "https://www.timobile.bg/p/samsung-galaxy-z-flip7-5g-12gb-ram-256gb-mint/"
+    currency: EUR
+    search_query: "Samsung Galaxy Z Flip7 256GB timobile.bg цена"
+
+  # --- Ofisite (ofisitebg.com): IT & electronics online store.
+  - id: ofisite
+    name: "Ofisite"
+    enabled: true
+    url: "https://ofisitebg.com/product/smartfon-samsung-galaxy-z-flip7-5g-256gb-12gb-ram-dual-sim"
+    currency: EUR
+    search_query: "Samsung Galaxy Z Flip7 256GB ofisitebg.com цена"
+
+  # --- Vega2002 (vega2002.com): mobile phone retailer, Plovdiv (F766, 256GB).
+  - id: vega2002
+    name: "Vega2002"
+    enabled: true
+    url: "https://vega2002.com/product/smartfon-gsm-samsung-galaxy-z-flip-7-f766-690-256-gb-ram-12-gb-5012-mp-5g"
+    currency: EUR
+    search_query: "Samsung Galaxy Z Flip7 256GB vega2002.com цена"
+
+  # --- JAR Computers: IT & electronics retailer (Coral, 256GB).
+  - id: jar
+    name: "JAR Computers"
+    enabled: true
+    url: "https://www.jarcomputers.com/samsung-galaxy-z-flip7-12gb256gb-coral-prod-tkgsmsamsungsmf766bzrgeue.html"
+    currency: EUR
+    search_query: "Samsung Galaxy Z Flip7 256GB jarcomputers.com цена"
+
   # --- Technomarket: national electronics chain (Blue Shadow, 256GB).
   - id: technomarket
     name: "Technomarket"
