@@ -22,8 +22,8 @@ def render(snapshot: Snapshot, diff: DiffReport) -> str:
         "",
         "## Prices",
         "",
-        "| # | Store | Price (EUR) | Δ vs previous | Source | Status |",
-        "|---:|---|---:|---|---|---|",
+        "| # | Store | Price (EUR) | Δ vs previous | Source | Status | Link |",
+        "|---:|---|---:|---|---|---|---|",
     ]
     for r in rows:
         store = r.store + (" \\*" if r.is_aggregator else "")
@@ -33,9 +33,11 @@ def render(snapshot: Snapshot, diff: DiffReport) -> str:
         status = "ok" if r.status == "ok" else f"**{r.status}**"
         delta = format_delta(r.delta_eur, r.pct) or "—"
         note = f" — {r.reason}" if r.status != "ok" and r.reason else ""
+        # Full product URL as an autolink so it is visible and clickable in the file.
+        link = f"<{r.url}>" if r.url else ""
         lines.append(
             f"| {rank} | {store} | {format_eur(r.price_eur)} | {delta} "
-            f"| {r.tier or r.source or ''} | {status}{note} |"
+            f"| {r.tier or r.source or ''} | {status}{note} | {link} |"
         )
     lines += ["", "\\* = price aggregator (links to third-party sellers)", ""]
     return "\n".join(lines)

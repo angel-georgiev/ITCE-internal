@@ -64,7 +64,10 @@ def _iter_jsonld_objects(soup: BeautifulSoup):
         if not text:
             continue
         try:
-            data = json.loads(text)
+            # strict=False tolerates literal control characters (newlines, tabs)
+            # inside string values — common in real-world JSON-LD product
+            # descriptions, which json.loads() rejects by default.
+            data = json.loads(text, strict=False)
         except (json.JSONDecodeError, ValueError):
             continue
         stack = [data]
