@@ -3,6 +3,10 @@
 # Add a store by appending an entry. `defaults` are inherited by every store
 # unless overridden. See README.md for the field reference and how to tune a
 # selector when a store comes back "unavailable" on the first live run.
+#
+# Product tracked: Samsung Galaxy Z Flip7, 12GB RAM, 256GB, 5G (model SM-F766).
+# Colours are normally priced identically; one representative colour is tracked
+# per store. FE (SM-F761, 8GB) and 512GB (F766 512GB) are deliberately excluded.
 
 defaults:
   timeout: 25
@@ -13,26 +17,101 @@ defaults:
   accept_language: "bg-BG,bg;q=0.9,en;q=0.8"
 
 stores:
-  # --- pazaruvaj.com: Bulgarian price aggregator (points to third-party sellers)
-  - id: pazaruvaj
-    name: "pazaruvaj.com"
-    enabled: true
-    url: "https://www.pazaruvaj.com/p/samsung-galaxy-z-flip7-5g-256gb-12gb-ram-dual-pP1217153056/"
-    method: jsonld          # aggregator pages expose AggregateOffer.lowPrice
-    currency: EUR
-    is_aggregator: true
-    # Fallback if JSON-LD ever disappears — flip method to `css` and use this:
-    # method: css
-    # selector: ".b-price, .price, [itemprop=lowPrice]"
-    # price_regex: "([0-9][0-9\\s.,]*)"
-    search_query: "Samsung Galaxy Z Flip7 256GB pazaruvaj"
+  # ---------------------------------------------------------------------------
+  # Direct retailers that emit schema.org JSON-LD and scrape cleanly over HTTP.
+  # ---------------------------------------------------------------------------
 
-  # --- eMAG.bg: the biggest Bulgarian e-commerce site (Jetblack tracked as the
-  #     representative 256GB colour; colours are normally identically priced).
+  # --- TechWave: online electronics retailer (cheapest observed).
+  - id: techwave
+    name: "TechWave"
+    enabled: true
+    url: "https://techwave.bg/produkt/samsung-galaxy-z-flip-7/"
+    currency: EUR
+    search_query: "Samsung Galaxy Z Flip7 256GB techwave.bg цена"
+
+  # --- Technomarket: national electronics chain (Blue Shadow, 256GB).
+  - id: technomarket
+    name: "Technomarket"
+    enabled: true
+    url: "https://www.technomarket.bg/telefoni/samsung-galaxy-z-flip-7-256gb-5g-ds-blue-shadow-f766-09231577"
+    currency: EUR
+    search_query: "Samsung Galaxy Z Flip7 256GB F766 technomarket.bg цена"
+
+  # --- samsungstore.bg: dedicated Samsung reseller.
+  - id: samsungstore
+    name: "samsungstore.bg"
+    enabled: true
+    url: "https://samsungstore.bg/samsung-f766-galaxy-z-flip7-5g-256gb"
+    currency: EUR
+    search_query: "Samsung Galaxy Z Flip7 256GB samsungstore.bg цена"
+
+  # --- Ozone.bg: electronics / gaming retailer (Coral Red, 256GB).
+  - id: ozone
+    name: "Ozone.bg"
+    enabled: true
+    url: "https://www.ozone.bg/product/smartfon-gsm-samsung-galaxy-z-flip-7-f766-6-90-256-gb-ram-12-gb-50-12-mp-5g-894921/"
+    currency: EUR
+    search_query: "Samsung Galaxy Z Flip7 256GB ozone.bg цена"
+
+  # --- eMAG.bg: the biggest Bulgarian e-commerce site (Jetblack, 256GB).
   - id: emag_bg
     name: "eMAG.bg"
     enabled: true
     url: "https://www.emag.bg/smartfon-samsung-galaxy-z-flip7-12gb-ram-256gb-5g-jetblack-sm-f766bzkgeue/pd/DJ5WT93BM/"
-    method: jsonld          # eMAG product pages emit a schema.org Product with Offer.price
     currency: EUR
     search_query: "Samsung Galaxy Z Flip7 256GB eMAG"
+
+  # ---------------------------------------------------------------------------
+  # Price aggregator (links to third-party sellers).
+  # ---------------------------------------------------------------------------
+
+  # --- pazaruvaj.com: BG price aggregator. Cloudflare-fronted: HTTP returns 403
+  #     and the headless browser is reset, so it usually reports "blocked" here.
+  #     When reachable, its AggregateOffer.lowPrice is the market low.
+  - id: pazaruvaj
+    name: "pazaruvaj.com"
+    enabled: true
+    url: "https://www.pazaruvaj.com/p/samsung-galaxy-z-flip7-5g-256gb-12gb-ram-dual-pP1217153056/"
+    currency: EUR
+    is_aggregator: true
+    search_query: "Samsung Galaxy Z Flip7 256GB pazaruvaj"
+
+  # ---------------------------------------------------------------------------
+  # Stores that are reachable but need tuning / are Cloudflare-fronted or JS-only.
+  # Kept enabled so the run reports them honestly (blocked / unavailable) rather
+  # than hiding them; see README for how to tune a selector once reachable.
+  # ---------------------------------------------------------------------------
+
+  # --- Technopolis: national electronics chain. Cloudflare-fronted (HTTP 403).
+  - id: technopolis
+    name: "Technopolis"
+    enabled: true
+    url: "https://www.technopolis.bg/en/Smartfoni-i-mobilni-telefoni/Smartfon-GSM--SAMSUNG-GALAXY-Z-FLIP-7-F766/p/508072"
+    currency: EUR
+    search_query: "Samsung Galaxy Z Flip7 256GB F766 technopolis.bg цена"
+
+  # --- Zora.bg: electronics chain (Blue, 256GB). Cloudflare-fronted (HTTP 403).
+  - id: zora
+    name: "Zora.bg"
+    enabled: true
+    url: "https://zora.bg/product/galaxy-z-flip-7-256gb-blue-sm-f766bdbg-12-gb-256-gb"
+    currency: EUR
+    search_query: "Samsung Galaxy Z Flip7 256GB SM-F766BDBG zora.bg цена"
+
+  # --- Vivacom: mobile carrier. Cash (no-contract) price is rendered client-side,
+  #     so JSON-LD carries no offer price over plain HTTP.
+  - id: vivacom
+    name: "Vivacom"
+    enabled: true
+    url: "https://www.vivacom.bg/devices/samsung-galaxy-z-flip7-256gb/000000000050013818_52516"
+    currency: EUR
+    search_query: "Samsung Galaxy Z Flip7 256GB Vivacom цена в брой"
+
+  # --- Yettel: mobile carrier. Product data loads client-side (JS), so plain HTTP
+  #     returns a shell without the price.
+  - id: yettel
+    name: "Yettel"
+    enabled: true
+    url: "https://www.yettel.bg/bg/private/device/view/samsung-galaxy-z-flip7-5g-256gb"
+    currency: EUR
+    search_query: "Samsung Galaxy Z Flip7 256GB Yettel цена в брой"
