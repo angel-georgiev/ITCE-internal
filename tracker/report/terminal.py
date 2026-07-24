@@ -20,11 +20,16 @@ def _plain(snapshot: Snapshot, diff: DiffReport) -> str:
         price = format_eur(r.price_eur)
         delta = format_delta(r.delta_eur, r.pct)
         src = (r.tier or r.source or "")
-        status = r.status if r.status != "ok" else ""
+        if r.status == "ok":
+            status = "⚠ verify" if r.verify_note else ""
+        else:
+            status = r.status
         line = f"{rank:>2}  {store:<22}{price:>12}  {delta:<20}{src:<8}{status}"
         out.append(line)
         if r.status != "ok" and r.reason:
             out.append(f"      ↳ {r.reason}")
+        elif r.verify_note:
+            out.append(f"      ↳ {r.verify_note}")
     out.append("")
     out.append("* = price aggregator (links to third-party sellers)")
     return "\n".join(out)
@@ -59,7 +64,10 @@ def render(snapshot: Snapshot, diff: DiffReport) -> None:
             delta = f"[green]{delta}[/green]"
         elif r.delta_eur is not None and r.delta_eur > 0:
             delta = f"[red]{delta}[/red]"
-        status = "" if r.status == "ok" else f"[yellow]{r.status}[/yellow]"
+        if r.status == "ok":
+            status = f"[red]⚠ verify[/red] [dim]{r.verify_note}[/dim]" if r.verify_note else ""
+        else:
+            status = f"[yellow]{r.status}[/yellow]"
         table.add_row(
             str(r.rank) if r.rank else "",
             store,

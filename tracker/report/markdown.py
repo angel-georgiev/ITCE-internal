@@ -30,7 +30,10 @@ def render(snapshot: Snapshot, diff: DiffReport) -> str:
         if r.status == "ok" and r.url:
             store = f"[{store}]({r.url})"
         rank = str(r.rank) if r.rank else ""
-        status = "ok" if r.status == "ok" else f"**{r.status}**"
+        if r.status == "ok":
+            status = f"⚠ verify — {r.verify_note}" if r.verify_note else "ok"
+        else:
+            status = f"**{r.status}**"
         delta = format_delta(r.delta_eur, r.pct) or "—"
         note = f" — {r.reason}" if r.status != "ok" and r.reason else ""
         # Full product URL as an autolink so it is visible and clickable in the file.

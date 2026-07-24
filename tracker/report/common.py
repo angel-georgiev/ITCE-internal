@@ -31,6 +31,7 @@ class Row:
     url: str
     reason: str | None
     color: str | None
+    verify_note: str | None
 
 
 def format_eur(value: Decimal | None) -> str:
@@ -71,6 +72,7 @@ def build_rows(snapshot: Snapshot, diff: DiffReport) -> list[Row]:
             url=r.url,
             reason=r.reason,
             color=r.color,
+            verify_note=r.verify_note,
         )
         if r.status == STATUS_OK and r.price_eur is not None:
             ok_rows.append(row)

@@ -70,6 +70,9 @@ class PriceResult:
     raw_currency: str | None = None
     is_aggregator: bool = False
     reason: str | None = None
+    # Set when an independent check found the scraped price disagrees with the
+    # price shown on the page (e.g. a live sale the markup didn't reflect).
+    verify_note: str | None = None
 
     def to_dict(self) -> dict:
         return {
@@ -85,6 +88,7 @@ class PriceResult:
             "raw_currency": self.raw_currency,
             "is_aggregator": self.is_aggregator,
             "reason": self.reason,
+            "verify_note": self.verify_note,
         }
 
     @classmethod
@@ -103,6 +107,7 @@ class PriceResult:
             raw_currency=d.get("raw_currency"),
             is_aggregator=d.get("is_aggregator", False),
             reason=d.get("reason"),
+            verify_note=d.get("verify_note"),
         )
 
 

@@ -23,6 +23,7 @@ tr.cheapest{background:#eafaf0;}
 .drop{color:#137333;font-weight:600;}
 .rise{color:#c5221f;font-weight:600;}
 .status{color:#b7791f;font-weight:600;}
+.verify{color:#c5221f;font-weight:600;}
 .agg{color:#888;}
 .note{color:#999;font-size:12px;}
 td.link{max-width:320px;}
@@ -54,7 +55,10 @@ def render(snapshot: Snapshot, diff: DiffReport) -> str:
         else:
             delta_html = escape(delta_txt)
         if r.status == "ok":
-            status_html = "ok"
+            if r.verify_note:
+                status_html = f"<span class='verify'>⚠ verify</span> <span class='note'>{escape(r.verify_note)}</span>"
+            else:
+                status_html = "ok"
         else:
             note = f" <span class='note'>{escape(r.reason)}</span>" if r.reason else ""
             status_html = f"<span class='status'>{escape(r.status)}</span>{note}"

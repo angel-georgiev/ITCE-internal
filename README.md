@@ -52,6 +52,19 @@ For each store (`fetch: auto`):
 A store that fails all tiers is marked `unavailable`/`blocked` **with a reason**
 and the run continues — one broken store never aborts the run.
 
+### Scraped prices are cross-checked against the page
+
+Structured data can lie: a store's JSON-LD sometimes carries the pre-discount
+**regular** price while the page actually sells the phone at a lower **sale**
+price. After extracting a price the tracker re-reads the page and, when it finds
+a struck-through regular price matching the scraped value alongside a lower sale
+price, marks the row **`⚠ verify`** with both numbers (e.g. _"page sale price
+€849.00, scraped regular €1199.00"_). The check is deliberately narrow — it only
+warns on that high-confidence pattern, so a clean row is never flagged — and a
+warning never fails the run; it just surfaces the mismatch for review. Fix a
+flagged store by pointing it at the displayed price (e.g. `method: css` with a
+selector for the sale element), as done for TImobile.
+
 ## CLI
 
 ```

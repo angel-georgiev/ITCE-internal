@@ -13,7 +13,7 @@ from __future__ import annotations
 
 import logging
 
-from . import fetcher, search_fallback
+from . import fetcher, search_fallback, verify
 from .adapters.base import ExtractResult, extract_price
 from .browser_fetcher import BrowserFetcher
 from .models import (
@@ -33,7 +33,12 @@ from .models import (
 log = logging.getLogger(__name__)
 
 
-def _ok_result(cfg: StoreConfig, ex: ExtractResult, *, source: str, tier: str) -> PriceResult:
+def _ok_result(
+    cfg: StoreConfig, ex: ExtractResult, *, source: str, tier: str, html: str | None = None
+) -> PriceResult:
+    # Cross-check the scraped price against the page's visible price; a warning
+    # here does not fail the row, it just surfaces in the report for review.
+    verify_note = verify.verify_price(html, ex.price_eur).note if html else None
     return PriceResult(
         store_id=cfg.id,
         store_name=cfg.name,
@@ -46,6 +51,7 @@ def _ok_result(cfg: StoreConfig, ex: ExtractResult, *, source: str, tier: str) -
         raw_price=ex.raw_price,
         raw_currency=ex.currency,
         is_aggregator=cfg.is_aggregator,
+        verify_note=verify_note,
     )
 
 
@@ -59,7 +65,7 @@ def _fetch_and_extract(cfg: StoreConfig, browser: BrowserFetcher, use_fallback: 
         if fr.ok and fr.html:
             ex = extract_price(fr.html, cfg)
             if ex.price_eur is not None:
-                return _ok_result(cfg, ex, source=SOURCE_SCRAPE, tier=TIER_HTTP)
+                return _ok_result(cfg, ex, source=SOURCE_SCRAPE, tier=TIER_HTTP, html=fr.html)
             reason = f"http: {ex.reason}"
         else:
             blocked = fr.blocked
@@ -72,7 +78,7 @@ def _fetch_and_extract(cfg: StoreConfig, browser: BrowserFetcher, use_fallback: 
         if br.ok and br.html:
             ex = extract_price(br.html, cfg)
             if ex.price_eur is not None:
-                return _ok_result(cfg, ex, source=SOURCE_SCRAPE, tier=TIER_BROWSER)
+                return _ok_result(cfg, ex, source=SOURCE_SCRAPE, tier=TIER_BROWSER, html=br.html)
             reason = f"browser: {ex.reason}"
         else:
             reason = f"browser: {br.reason}"
